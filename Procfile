@@ -1,1 +1,1 @@
-web:gunicorn modem.wsgi --log-file -
+web: gunicorn modem.wsgi --log-file -
