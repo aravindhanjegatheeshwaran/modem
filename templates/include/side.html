@@ -1,0 +1,77 @@
+{% load static %}{% block content %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<nav class=" iq-sidebar-menu  " style="float:left;background: #051c6f;">
+    <ul id="iq-sidebar-toggle" class="iq-menu">
+
+        <li class="navli ">
+            <a class="navli_item " href=" / ">Dashboard</a>
+        </li>
+        <li class=" navli ">
+            <a class="navli_item " href="/manage " class="collapsed ">
+                <img src="{% static '/images/app white.png'%}" width="20px" height="20px">
+                <span>  Application Management</span>
+            </a>
+        </li>
+        <li class=" navli ">
+            <a class="navli_item " href="/device " class="collapsed ">
+
+                <i class="fa fa-cog " aria-hidden="true "></i><span>Manage Device</span>
+            </a>
+        </li>
+        <li class="navli ">
+            <a class="navli_item " href=/user " class="collapsed ">
+    <i class="fa fa-database " aria-hidden="true "></i>
+    <span>Manage User</span>
+    </a>
+    </li>
+
+    <li class="navli ">
+        <a class="navli_item " href="/csvfile " class="collapsed ">
+            <i class="fa fa-user-plus " aria-hidden="true "></i></i><span>Upload Contacts</span>
+        </a>
+    </li>
+    <li class="navli ">
+        <a class="navli_item " href="/inbox " class="collapsed ">
+            <i class="fa fa-envelope " aria-hidden="true "></i></i>
+            </i><span>Inbox:SMS/Call</span>
+        </a>
+    </li>
+    <li class="navli ">
+        <a class="navli_item " href="/compose " class="collapsed ">
+            <i class="fa fa-pencil-square-o " aria-hidden="true "></i><span>Compose</span>
+        </a>
+    </li>
+    <li class=" navli ">
+        <a class="navli_item " href="/outbox " class="collapsed ">
+            <i class="fa fa-inbox " aria-hidden="true "></i><span onclick="loading() ">SMS OutBox</span>
+        </a>
+    </li>
+    <li class="navli ">
+        <a class="navli_item " href="/report " class="collapsed ">
+            <i class="fa fa-envelope " aria-hidden="true "></i></i><span>SMS Report</span>
+        </a>
+    </li>
+    <li class="navli ">
+        <a class="navli_item " href="# " class="collapsed ">
+            <i class="fa fa-phone " aria-hidden="true "></i></i><span>Voice Call</span>
+        </a>
+    </li>
+    <li class="navli ">
+        <a class="navli_item " href="/test " class="collapsed ">
+            <i class="fa fa-calendar " aria-hidden="true "></i><span>Scheduler</span>
+        </a>
+    </li>
+    <li class=" navli ">
+        <a class="navli_item " href="/item " class="collapsed ">
+            <img src="{% static '/images/callreport.png'%} " width="20px " height="20px ">
+            <span>Voice Call Report</span>
+        </a>
+    </li>
+    <li class=" navli ">
+        <a class="navli_item " href="# " class="collapsed ">
+            <i class="fa fa-handshake-o " aria-hidden="true "></i><span>About Us</span>
+        </a>
+    </li>
+    </ul>
+</nav>
+{% endblock %}

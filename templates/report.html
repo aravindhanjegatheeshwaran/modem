@@ -1,0 +1,99 @@
+<div class="d-flex align-items-center justify-content-between welcome-content">
+    <div class="top-header" style="background:#051c6f;">
+        <div class="float-left p-3">
+            <i class="fa fa-bars" aria-hidden="true" style="color:white !important;size:30px;"></i>
+        </div>
+        <div class="float-right pr-5">
+
+            <img class="profile-img " src="../static/images/user/12.jpg"> <span class="admin_name"> Admin!</span>
+        </div>
+    </div>
+</div>
+{% extends 'layout.html' %} {% load static %} {% block title %}Modem{% endblock %} {% block content %}
+<style type="text/css">
+    .user_add {
+        font-size: 15px;
+    }
+    
+    .reserbtn {
+        margin-left: 10px;
+    }
+    
+    .header_h1 h3 {
+        width: 100%;
+        color: white;
+        padding: 5px 5px;
+        margin-left: 10px;
+        text-align: center;
+    }
+</style>
+
+
+
+<div class="content-page">
+    <div class="container-fluid">
+
+        <div class="card">
+            <div class="header-title ">
+
+                <h5 class="card-title pt-3 pl-3">Details of SMS sent Status</h5>
+            </div>
+            <div class="card-body">
+
+                <form method="post" action="{% url 'report' %}">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-sm-2">
+                            <div class="form-group row margin2">
+                                <label class="control-label  align-self-center" for="Date">Date:</label>
+
+                                <input type="date" name="date" class="form-control">
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="form-group row margin2">
+                                <label class="control-label  align-self-center" for="Select Status">Select Status:</label>
+                                <select class="form-control" name="status">
+                                                <option value="">--Select--</option>
+                                                <option value="success">Success</option>
+                                                <option value="fail">Failed</option>
+                                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-3">
+                            <button type="submit" class="btn btn-danger set_avoid" name="get_report" style="border-radius:1px">GET Report</button>
+                        </div>
+                    </div>
+
+
+                </form>
+                <div class="table table-responsive">
+                    <table class="table table-striped table-bordered table-hover mt-4">
+                        <thead>
+                            <tr>
+
+                                <th scope="col">To</th>
+                                <th scope="col">Message Content</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Status</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {%for i in get%}
+                            <tr>
+                                <td> {{i.num}}</td>
+                                <td>{{i.msg}}</td>
+                                <td>{{i.date}}</td>
+                                <td>{{i.status}}</td>
+                            </tr>
+                            {%endfor%}
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock%}
