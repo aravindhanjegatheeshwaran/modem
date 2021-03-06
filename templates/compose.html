@@ -1,0 +1,233 @@
+<div class="d-flex align-items-center justify-content-between welcome-content">
+    <div class="top-header" style="background:#051c6f;">
+        <div class="float-left p-3">
+            <i class="fa fa-bars" aria-hidden="true" style="color:white !important;size:30px;"></i>
+        </div>
+        <div class="float-right pr-5">
+
+            <img class="profile-img " src="../static/images/user/12.jpg"> <span class="admin_name"> Admin!</span>
+        </div>
+    </div>
+</div>
+{% extends 'layout.html' %} {% load static %} {% block title %}Modem{% endblock %} {% block content %}
+<style type="text/css">
+    .card {
+        background: white;
+        border-radius: 1px;
+        margin-bottom: 30px;
+        -ms-box-shadow: 0 16px 40px 0 rgba(0, 0, 0, .0392157);
+        -o-box-shadow: 0 16px 40px 0 rgba(0, 0, 0, .0392157);
+        box-shadow: 0 16px 40px 0 rgb(0 0 0 / 4%);
+    }
+    
+    .user_add {
+        font-size: 15px;
+    }
+    
+    .reserbtn {
+        margin-left: 10px;
+    }
+    
+    .header_h1 h3 {
+        width: 100%;
+        background: #5a9a97;
+        color: white;
+        padding: 5px 5px;
+        margin-left: 10px;
+        text-align: center;
+    }
+    
+    .content-page {
+        margin-top: -50px;
+    }
+</style>
+<form action="{% url 'compose' %}" method="POST">
+    {% csrf_token %}
+
+    <div class="content-page">
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-12">
+                    <span> <p style="color:navy;">Home >> compose </p>  </span>
+
+                </div>
+                <div class="col-lg-12">
+                    <div class="row">
+                        <div class="col-sm-6 col-lg-6">
+                            <div class="card">
+
+                                <div class="card-body">
+                                    <label>Load Contacts form List:</label><br>
+                                    <div class="row">
+                                        <div class="col-sm-6 col-lg-2">
+                                            <label>Type :</label>
+                                        </div>
+                                        <div class="col-sm-6 col-lg-6">
+                                            <input type="radio" id="list" name="type" value="list" class="">
+                                            <span id="limitsl"> Get Contact List</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-sm-6 col-lg-3">
+                                            <label>Contact List :</label>
+                                        </div>
+                                        <div>
+                                            <select name="conname" id="add-html-here">
+                                    <option>select</option>
+                                </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-sm-6 col-lg-6">
+                            <div class="card">
+
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-sm-5 col-lg-5">
+                                            <label>Load Contact Manual</label>
+                                        </div>
+                                        <div class="col-sm-7 col-lg-7 text-center">
+                                            <label class="red_color">Colon seprated no. allowed</label>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="row">
+                                        <div class="col-sm-6 col-lg-2">
+                                            <label>Type :</label>
+                                        </div>
+                                        <script>
+                                            $(document).ready(function() {
+                                                $('#list').click(function() {
+                                                    var type = $('#list').val();
+                                                    let target_element = $('#add-html-here');
+                                                    $.ajax({
+                                                        type: 'POST',
+                                                        url: '{% url "compose" %}',
+                                                        data: {
+                                                            'type': type,
+                                                            'csrfmiddlewaretoken': '{{ csrf_token }}',
+                                                        },
+                                                        success: function(data) {
+                                                            if (data) {
+                                                                console.log(data);
+                                                                target_element.html(data);
+                                                            }
+                                                        }
+                                                    });
+
+                                                });
+
+
+                                                $('#add-html-here').change(function() {
+                                                    var type = $('#list').val();
+                                                    var conname = $('#add-html-here').val();
+                                                    let target_element = $('#add-html2-here');
+                                                    $.ajax({
+                                                        type: 'POST',
+                                                        url: '{% url "compose" %}',
+                                                        data: {
+                                                            'type': type,
+                                                            'conname': conname,
+                                                            'csrfmiddlewaretoken': '{{ csrf_token }}',
+                                                        },
+                                                        success: function(data) {
+                                                            if (data) {
+                                                                console.log(data);
+                                                                target_element.html(data);
+
+                                                            }
+                                                        }
+                                                    });
+                                                });
+                                                $('#add-html-here').change(function() {
+                                                    var count = $("table tr").length;
+                                                    var c = count - 1;
+                                                    $('#counter').text(c);
+                                                });
+                                            });
+                                        </script>
+                                        <div class="col-sm-6 col-lg-6">
+                                            <input type="radio" name="type" class="">
+                                            <span id="limitsl"> Manual</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-sm-6 col-lg-3">
+                                            <label>Mobile No:</label>
+                                        </div>
+                                        <div class="col-sm-6 col-lg-9">
+                                            <input type="number" name="mobile" class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12 col-lg-12 ">
+                    <div class="card">
+                        <div class="card-body" style="background: #dfdddda6;">
+                            <div class="row">
+                                <div class="col-sm-6 col-lg-2">
+                                    <h4>SMS</h4>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-10 col-lg-9">
+                                    <span>Message Character : <span id="rchars"></span></span>
+                                    <span class="ml-5">maximum character (250)</span>
+                                    <textarea name="message" rows="4" class="form-control text_top"></textarea>
+                                </div>
+                                <div class="col-sm-2 col-lg-3 mt-4 p-3">
+
+                                    <button type="submit" class="btn btn-danger out_style " name="outbox">Forward to SMS OutBox </button>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-sm-12 col-lg-12">
+                                    <span>Total Count : <span id="counter"></span></span>
+                                    <div class="row">
+                                        <div class="col-sm-12 col-lg-12">
+                                            <div class="table-responsive" id="add-html2-here">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</form>
+
+<script>
+    $('textarea').keyup(function() {
+        var textlen = $(this).val().length;
+        $('#rchars').text(textlen);
+    });
+</script>
+{%endblock%}

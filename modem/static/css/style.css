@@ -1,0 +1,46 @@
+ul {
+    list-style: none;
+}
+
+.logo_img {
+    width: 70px;
+    margin: 14px;
+}
+
+.navli {
+    padding: 10px;
+}
+
+.navli_item {
+    color: black;
+}
+
+.navli_item:hover {
+    text-decoration: none;
+}
+
+.fa {
+    padding-right: 12px;
+}
+
+.head_page {
+    margin: 20px;
+    font-size: 32px;
+}
+
+.fmodem {
+    float: right;
+    margin-right: 10px;
+}
+
+.inputbox {
+    margin: 10px;
+}
+
+table tr td {
+    padding: 10px;
+}
+
+#con_tab table th {
+    border: 1px solid black;
+}

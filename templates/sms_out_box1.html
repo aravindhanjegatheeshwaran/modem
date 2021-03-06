@@ -1,0 +1,235 @@
+{% extends 'layout.html' %} {% load static %} {% block title %}Modem{% endblock %} {% block content %}
+<style>
+    #sms_outbox tr td {
+        border: 1px solid black;
+    }
+    
+    .user_add {
+        font-size: 14px;
+    }
+    
+    input {
+        height: 35px !important;
+    }
+    
+    .check {
+        margin-top: 6px;
+    }
+    
+    .reserbtn {
+        margin-left: 10px;
+    }
+    
+    .header_h1 h3 {
+        width: 100%;
+        background: #051c6f;
+        color: white;
+        padding: 5px 5px;
+        margin-left: 10px;
+        text-align: center;
+    }
+    
+    .btn {
+        border-radius: 1px;
+    }
+    
+    .card {
+        background: #dff6f8;
+        border-radius: 1px;
+        margin-bottom: 30px;
+    }
+</style>
+<script>
+    $(document).ready(function() {
+
+
+        var count = $("#sms_outbox tr").length;
+        var c = count - 1;
+        $('#counter').text(c);
+
+    });
+</script>
+
+<div class="row header_h1">
+    <h3> SMS Report</h3>
+</div>
+
+<div class="content-page">
+    <div class="container-fluid">
+        <div class="col-lg-12">
+            <span> <p>Home >> SIM Report </p>  </span>
+
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col-lg-12">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <table>
+                                    <tr>
+                                        <td>Port: </td>
+                                        <td>Com3 </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sim: </td>
+                                        <td>Sim1 </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <table style="float:right">
+                                    <tr>
+                                        <td>Sms Limit: </td>
+                                        <td>{{limit}} </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Send Sms:{{suc}}</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Failed Sms: </td>
+                                        <td>{{fail}} </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-12">
+
+                        <div class="mb-5"></div>
+                        <table id="sms_outbox" class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">To</th>
+                                    <th scope="col">Message</th>
+                                    <th scope="col">Date & Time</th>
+                                    <th scope="col">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {%for i in get%}
+                                <tr>
+                                    <td>{{i.num}}</td>
+                                    <td>{{i.msg}}</td>
+                                    <td> {{i.date}}</td>
+                                    <td>{{i.status}}</td>
+                                </tr>
+                                {%endfor%}
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="ussd">
+    <div class="modal-dialog ">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Add User</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-body">
+                        <form class="form-horizontal" action="#">
+                            <div class="form-group row">
+                                <label class="control-label col-sm-3 align-self-center user_add" for="lname">First Name:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" name="fname" class="form-control" id="fname" placeholder="">
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="control-label col-sm-3 align-self-center user_add" for="lname">Last Name:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" name="lname" class="form-control" id="lname" placeholder="">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="control-label col-sm-3 align-self-center user_add" for="mobile">Mobile No:</label>
+                                <div class="col-sm-9">
+                                    <input type="number" name="mobile" class="form-control" id="mobile" placeholder="">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="control-label col-sm-3 align-self-center user_add" for="User Name">User Name:</label>
+                                <div class="col-sm-9">
+                                    <input type="text" name="uname" class="form-control" id="User Name" placeholder="">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="control-label col-sm-3 align-self-center user_add" for="Password">Password:</label>
+                                <div class="col-sm-9">
+                                    <input type="password" name="password" class="form-control" id="Password" placeholder="">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="control-label col-sm-3 align-self-center user_add" for="Password">Confirm Password:</label>
+                                <div class="col-sm-9">
+                                    <input type="password" name="cpassword" class="form-control" id="cPassword" placeholder="">
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="control-label col-sm-3 align-self-center user_add" for="Address">Address</label>
+                                <div class="col-sm-9">
+                                    <textarea name="address" class="form-control">
+                                
+                              </textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label class="control-label col-sm-3 align-self-center user_add" for="permission">Permission</label>
+                                <div class="col-sm-9">
+                                    <div class="row">
+                                        <div class="col-sm-1">
+                                            <input type="checkbox" id="read" name="read" value="read">
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label class="check" for="read">Read</label>
+                                        </div>
+                                        <div class="col-sm-1">
+                                            <input type="checkbox" id="delete" name="delete" value="Delete">
+                                        </div>
+                                        <div class="col-sm-4">
+                                            <label class="check" for="Delete">Delete</label>
+                                        </div>
+                                    </div>
+
+                                    <!--   -->
+                                </div>
+                                <div class="col-sm-3">
+                                </div>
+                                <div class="col-sm-9">
+                                    <button type="submit" class="btn btn-primary">Add User</button>
+                                    <button class="btn bg-danger reserbtn" type="reset">Reset</button>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+
+
+        </div>
+    </div>
+</div>
+{%endblock%}

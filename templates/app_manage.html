@@ -1,0 +1,421 @@
+<div class="d-flex align-items-center justify-content-between welcome-content">
+    <div class="top-header" style="background:#051c6f;">
+        <div class="float-left p-3">
+            <i class="fa fa-bars" aria-hidden="true" style="color:white !important;size:30px;"></i>
+        </div>
+        <div class="float-right pr-5">
+
+            <img class="profile-img " src="../static/images/user/12.jpg"> <span class="admin_name"> Admin!</span>
+        </div>
+    </div>
+</div>
+{% extends 'layout.html' %} {% load static %} {% block title %}Modem{% endblock %} {% block content %}
+<style>
+    .header_h1 h3 {
+        width: 100%;
+        background: green;
+        color: white;
+        padding: 5px 5px;
+        margin-left: 10px;
+        text-align: center;
+    }
+    
+    .content-page button {
+        border-radius: 1px;
+    }
+    
+    .app_mag_bd {
+        border: 1px solid lightgray;
+        padding: 15px;
+        margin-top: -50px;
+    }
+    
+    button {
+        background: #071533;
+    }
+    
+    .card {
+        background: white;
+        border-radius: 1px;
+        margin-bottom: 30px;
+        box-shadow: 1px 2px 2px gray;
+    }
+</style>
+
+<div class="content-page">
+    <div class="container-fluid  app_mag_bd">
+        <div class="row">
+            <div class="col-lg-12 mb-3">
+                <span> <p style="color:navy;">Home >> App Manager </p>  </span>
+            </div>
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between">
+                        <div class="header-title">
+
+                            <h4 class="card-title">Basic Settings</h4>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form class="form-horizontal" action="#">
+                            <div class="form-group row">
+                                <label class="control-label col-sm-4 align-self-center" for="">Select Modem Type:</label>
+                                <div class="col-sm-8">
+                                    <div class="input-group">
+
+                                        <select name="type" class="form-control">
+                                    <option value="">Single</option>
+                                    <option value="">Double</option>
+                                    <option value="">Multiple</option>
+                                  </select>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="control-label col-sm-4 align-self-center" for="">Select Country:</label>
+                                <div class="col-sm-8">
+                                    <div class="input-group">
+                                        <select name="country" class="form-control">
+                                    <option value="India">India</option>
+                                    <option value="India">America</option>
+                                    <option value="India">China</option>
+                                    <option value="India">Russia</option>
+                                    <option value="India">Japan</option>
+                                  </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="control-label col-sm-4 align-self-center" for="">Select Baud Rate:</label>
+                                <div class="col-sm-8">
+                                    <div class="input-group">
+                                        <select name="rate" class="form-control">
+                                    <option value="115200">115200</option>
+                                    <option value="115201">115201</option>
+                                    <option value="115202">115202</option>
+                                    <option value="115203">115203</option>
+                                    <option value="115204">115204</option>
+                                  </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!--<div class="card">
+                  <div class="card-header d-flex justify-content-between">
+                     <div class="header-title">
+                        <h4 class="card-title">DTMF Setting</h4>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                      <div class="col text-center">
+                      <div class="form-group row ">
+                      <div class="checkbox d-inline-block mr-3">
+                          <input type="checkbox" value="dtmf_disable" name="dtmf[]" class="checkbox-input" id="checkbox1">
+                          <label for="checkbox1">DTMF disable</label>
+                       </div>
+                       <div class="checkbox d-inline-block mr-3">
+                          <input type="checkbox" value="SMS sent on DTMS tone" name="dtmf[]" class="checkbox-input" id="checkbox1">
+                          <label for="checkbox1">Is SMS sent on DTMS tone? </label>
+                       </div>
+                     </div>
+                   </div>
+                        <div class="form-group row">
+                       <label class="control-label col-sm-4 align-self-center" style="margin-top:-37px;" for="">DTMF Avoid Tone:</label>
+                           <div class="col-sm-8">
+                              <div class="input-group">
+                                <span style="color:red;">*DTMF tone are seperated by comma(,)</span>
+                              </div>
+                              <div class="input-group">
+                                <input type="text" name="avoid_tone" class="form-control">
+                              </div>
+                              
+                               <div class="input-group">
+                               <button class="btn btn-primary set_avoid" type="submit" name="set_avoid">Set Avoid DTMF</button>
+                              </div>
+                           </div>
+                         </div>
+
+                    </form>
+                </div>
+                </div>-->
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between">
+                        <div class="header-title">
+                            <h4 class="card-title">Automated File Details</h4>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            <div class="col text-center">
+                                <div class="form-group row ">
+                                    <div class="checkbox d-inline-block mr-3">
+
+                                        <label for="checkbox1">File Path:</label>
+                                        <input style="float:right" type="file" name="path">
+                                        <input class="btn btn-danger set_avoid" type="submit" name="set_path" value="Set Auto Path" style="border-radius:1px">
+                                    </div>
+
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between">
+                        <div class="header-title">
+                            <h4 class="card-title">Modem Settings</h4>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <button type="button" class="btn btn-danger fmodem" data-toggle="modal" data-target="#ussd">USSD Command</button>
+                        <button type="submit" id="m_reset" class="btn btn-success fmodem">Modem Reset</button>
+                    </div>
+                </div>
+                <!--<div class="card">
+                  <div class="card-header d-flex justify-content-between">
+                   <div class="header-title">
+                        <h4 class="card-title">Mail and Voice Call Settings</h4>
+                    </div>
+                  </div>
+                    <div class="card-body">
+                    <div class="form-group">
+                        <button type="submit" id="m_reset" class="btn btn-primary fmodem">Email Configuration</button>
+                    </div>
+                </div>
+                </div>-->
+
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between">
+                        <div class="header-title">
+                            <h4 class="card-title">Application Service</h4>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            <div class="col text-center">
+                                <div class="form-group row ">
+                                    <div class="checkbox d-inline-block mr-3">
+
+                                        <label for="checkbox1">Incoming Call: </label>
+                                        <input class="incall" type="checkbox" name="incall" value="ON"> ON
+
+                                        <input class="incall" type="checkbox" name="incall" value="OFF"> OFF
+                                        <input class="btn btn-success incall" type="submit" name="incall" value="Set Auto Path" style="border-radius:1px">
+                                    </div>
+
+                                </div>
+                            </div>
+
+
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between">
+                        <div class="header-title">
+                            <h4 class="card-title">Permission</h4>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            <div class="row">
+
+                                <div class="col-lg-7">
+                                    <div class="col text-right">
+                                        <label>Outgoing SMS Service </label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-5">
+                                    <input type="radio" name="outsms" value="yes"> Yes
+                                    <input type="radio" name="outsms" value="no"> No
+                                </div>
+
+                                <div class="col-lg-7">
+                                    <div class="col text-right">
+                                        <label>Incoming SMS Service </label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-5">
+                                    <input type="radio" name="insms" value="yes"> Yes
+                                    <input type="radio" name="insms" value="no"> No
+                                </div>
+
+                                <div class="col-lg-7">
+                                    <div class="col text-right">
+                                        <label>Incoming SMS Mail Service </label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-5">
+                                    <input type="radio" name="inmailsms" value="yes"> Yes
+                                    <input type="radio" name="inmailsms" value="no"> No
+                                </div>
+
+                                <div class="col-lg-7">
+                                    <div class="col text-right">
+                                        <label>Incoming SMS Default Mail Service </label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-5">
+                                    <input type="radio" name="inmaildefsms" value="yes"> Yes
+                                    <input type="radio" name="inmaildefsms" value="no"> No
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-7">
+                                    <div class="col text-right">
+                                        <label>Voice Call Service </label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-5">
+                                    <input type="radio" name="voice_call" value="yes"> Yes
+                                    <input type="radio" name="voice_call" value="no"> No
+                                </div>
+                            </div>
+
+
+
+                            <div class="row">
+                                <div class="col-lg-7">
+                                    <div class="col text-right">
+                                        <label>Incoming Voice Call Service</label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-5">
+                                    <input type="radio" name="invoice" value="yes"> Yes
+                                    <input type="radio" name="invoice" value="no"> No
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-7">
+                                    <div class="col text-right">
+                                        <label>Voice Call Service </label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-5">
+                                    <input type="radio" name="voice_call" value="yes"> Yes
+                                    <input type="radio" name="voice_call" value="no"> No
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="ussd">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Run USSD Command</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-body">
+                        <form method="post">
+                            <div class="row">
+                                <div class="col-lg-1 mb-3">
+                                    <label>Port:</label>
+                                </div>
+                                <div class="col-lg-11 mb-3">
+                                    <textarea class="form-control" id="horizontalTextarea" rows="2"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-lg-1 mb-3">
+                                    <label>Action</label>
+                                </div>
+                                <div class="col-lg-11 mb-3">
+                                    <div class="row">
+                                        <div class="col-lg-2">
+                                            <div class="radio d-inline-block mr-2">
+                                                <input type="radio" name="bsradio" id="radio1" checked="">
+                                                <label for="radio1">Active</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-8">
+                                            <div class="row">
+                                                <div class="col-lg-2">
+                                                    <label>Command:</label>
+                                                </div>
+                                                <div class="col-lg-10">
+
+                                                    <div class="input-group mb-4">
+
+                                                        <input type="text" class="form-control" aria-describedby="basic-addon1">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2 my_btn">
+                                            <button type="submit" class="btn btn-primary">Execute</button>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-9">
+                                            <table class="table">
+                                                <thead class="thead-dark">
+                                                    <tr>
+                                                        <th scope="col"> </th>
+                                                        <th scope="col">portName</th>
+                                                        <th scope="col">simStatus</th>
+                                                        <th scope="col">simNetwork</th>
+                                                        <th scope="col">ismiNumber</th>
+                                                        <th scope="col">MobileNo</th>
+                                                        <th scope="col">response</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <th scope="row"></th>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td></td>
+
+                                                    </tr>
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                        <div class="col-lg-3 my_btn">
+                                            <textarea class="form-control" id="horizontalTextarea" rows="7" cols="5" placeholder="Textarea"></textarea>
+                                            <button type="submit" class="btn btn-primary set_avoid">Update</button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+
+
+        </div>
+    </div>
+</div>
+{%endblock%}

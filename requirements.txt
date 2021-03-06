@@ -1,0 +1,5 @@
+django
+pyserial
+phonenumbers
+serial
+pandas
