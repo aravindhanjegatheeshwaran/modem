@@ -9507,9 +9507,10 @@ a.text-dark:hover {
 }
 
 .iq-sidebar-menu {
-    position: relative;
+    position: fixed;
     background: #06279e;
-    margin: 0 15px
+    margin: 0 15px;
+    margin-bottom:50px;
 }
 
 .iq-sidebar-menu .iq-menu {

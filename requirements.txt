@@ -1,5 +1,11 @@
 django
 pyserial
 phonenumbers
-serial
+prettytable
+sweetify
 pandas
+websocket-client
+mysql-connector-python
+mysqlclient 
+websockets
+# goto-statement

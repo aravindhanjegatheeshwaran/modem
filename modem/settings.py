@@ -25,7 +25,7 @@ SECRET_KEY = 'pf0eg4&d90+!s4#17w_y@es*dl-m_q^0)7gwz4$)ng@dadaqq^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'sweetify'
 ]
 
 MIDDLEWARE = [
@@ -70,15 +71,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'modem.wsgi.application'
 
-
+SWEETIFY_SWEETALERT_LIBRARY = 'sweetalert2'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'sqllite3.db'),
+    'default':{
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'modem',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': 'localhost',
+        'PORT': '3306'
     }
 }
 

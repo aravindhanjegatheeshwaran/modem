@@ -1,0 +1,457 @@
+<div class="d-flex align-items-center justify-content-between welcome-content">
+    <div class="top-header" style="background:#051c6f;">
+        <div class="float-left p-3">
+            <i class="fa fa-bars" aria-hidden="true" style="color:white !important;size:30px;"></i>
+        </div>
+        <div class="float-right pr-5">
+
+            <img class="profile-img " src="../static/images/user/12.jpg"> <span class="admin_name"> Admin!</span>
+        </div>
+    </div>
+</div>
+{% extends 'layout.html' %} {% load static %} {% block title %}Modem{% endblock %} {% block content %}
+<style>
+    ul li {
+        list-style: none;
+    }
+    
+    ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    
+    .simback {
+        background: white;
+        padding: 5px 0px;
+    }
+    
+    .towerdiv a {
+        padding: 0px 15px;
+    }
+    
+    .tower li {
+        float: left;
+        list-style: none;
+        margin-right: 10px;
+        padding: 0px 4px;
+        margin: 10px 5px;
+    }
+    
+    .tower li a {
+        color: white;
+        text-align: center;
+    }
+    
+    .tower li .towerdiv,
+    .tower li .towerdiv1 {
+        width: 80px;
+        height: 80px;
+        background: white;
+        padding: 10px;
+        color: white;
+        position: relative;
+    }
+    
+    .tower li .towerdiv i,
+    .tower li .towerdiv1 i {
+        float: right;
+        color: black;
+    }
+    
+    .towerdiv1_1 {
+        width: 100px;
+        height: 80px;
+        background: white;
+        padding: 10px;
+        color: white;
+        position: relative;
+    }
+    
+    .towerdiv1_1 i {
+        float: right;
+    }
+    
+    .header_h1 h3 {
+        width: 100%;
+        background: #4133b5;
+        color: white;
+        padding: 5px 5px;
+        margin-left: 10px;
+        text-align: center;
+    }
+    
+    .fa-signal {
+        font-size: 30px;
+        color: orange;
+        margin-top: 20px;
+    }
+    /* Center the indloader */
+    
+    #indloader6 {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        z-index: 1;
+        width: 120px;
+        height: 120px;
+        margin: -76px 0 0 -76px;
+        border: 16px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 16px solid #3498db;
+        -webkit-animation: spin 2s linear infinite;
+        animation: spin 2s linear infinite;
+    }
+    
+    @-webkit-keyframes spin {
+        0% {
+            -webkit-transform: rotate(0deg);
+        }
+        100% {
+            -webkit-transform: rotate(360deg);
+        }
+    }
+    
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+    /* Add animation to "page content" */
+    
+    .animate-bottom {
+        position: relative;
+        -webkit-animation-name: animatebottom;
+        -webkit-animation-duration: 1s;
+        animation-name: animatebottom;
+        animation-duration: 1s
+    }
+    
+    @-webkit-keyframes animatebottom {
+        from {
+            bottom: -100px;
+            opacity: 0
+        }
+        to {
+            bottom: 0px;
+            opacity: 1
+        }
+    }
+    
+    @keyframes animatebottom {
+        from {
+            bottom: -100px;
+            opacity: 0
+        }
+        to {
+            bottom: 0;
+            opacity: 1
+        }
+    }
+    
+    .towerul {
+        -webkit-transform: scaleY(-1);
+        transform: scaleY(-1);
+        margin-top: 45px;
+    }
+    
+    .fline {
+        background: green;
+        height: 4px;
+        width: 4px;
+        float: left;
+    }
+    
+    .sline {
+        background: green;
+        height: 8px;
+        width: 4px;
+        float: left;
+        margin-left: 2px;
+    }
+    
+    .tline {
+        background: green;
+        height: 12px;
+        width: 4px;
+        float: left;
+        margin-left: 2px;
+    }
+    
+    .frline {
+        background: green;
+        height: 16px;
+        width: 4px;
+        float: left;
+        margin-left: 2px;
+    }
+    
+    .fvline {
+        background: green;
+        height: 20px;
+        width: 4px;
+        float: left;
+        margin-left: 2px;
+    }
+</style>
+
+<form action="{% url 'index' %}" method="POST">
+    {% csrf_token %}
+    <div class="row" style="margin-top:30px;position:relative">
+        <div class="col-lg-6 mb-3">
+
+            <input type="submit" style="float: right;
+            background: green;
+            color: white;
+            padding: 7px 6px;
+            border-radius: 1px;
+            border:0;
+            font-size: 19px;
+            text-transform: uppercase;" name="update" value="Update all ports" id="ind_startcont" onclick="myFunction6()">
+
+        </div>
+        <div class="col-lg-6 mb-3">
+
+            <input type="submit" style="
+            background: blue;
+            color: white;
+            padding: 7px 6px;
+            border-radius: 1px;
+            border:0;
+            font-size: 19px;
+            text-transform: uppercase;" name="" value="Check Port Status" id="ind_startcont" onclick="myFunction6()">
+
+        </div>
+
+    </div>
+    <div class="card" id="indloader6" style="display:none"></div>
+
+
+    <script>
+        var myVarind;
+
+
+        function myFunction6() {
+
+            document.getElementById("indloader6").style.display = "block";
+            document.getElementById("ind_startcont").style.display = "block";
+            document.getElementById("indmyDiv").style.display = "none";
+            document.getElementById("fhide").style.display = "none";
+
+        }
+
+        function load1() {
+            document.getElementById("indloader6").style.display = "none";
+            document.getElementById("indmyDiv").style.display = "block";
+            document.getElementById("preloader").style.display = "none";
+        }
+    </script>
+
+
+    <div class="loader_page" id="indmyDiv">
+        <div class="content-page" style="float:revert;margin-top:-100px;">
+            <div class="container-fluid">
+
+
+
+                <div class="card">
+
+                    <div class="row p-3 pl-5">
+                        <div class="col-lg-2" id="">
+                            <h4> COM1 </h4>
+
+                            <ul class="towerul">
+                                <li class="sline"></li>
+                                <li class="tline"></li>
+                                <li class="frline"></li>
+                                <li class="fvline"></li>
+
+                            </ul>
+                            <div id="indloader" style="display:none"></div>
+                        </div>
+                        <div style="margin-left:-30px;" class="col-lg-10 simback">
+                            {%for i in l1%}
+                            <ul class="tower">
+                                {%ifequal i "True"%}
+                                <li>
+                                    <div id="startcont" class="towerdiv">
+                                        <br/>
+                                        <a class="btn btn-success">sim{{forloop.counter}}</a>
+                                        <input onchange="load()" type="hidden" value="{{n}}">
+                                    </div>
+
+
+                                </li>
+                                {%else%}
+                                <li>
+                                    <div id="startcont" class="towerdiv">
+                                        <br/>
+                                        <a class="btn btn-danger">sim{{forloop.counter}}</a>
+                                    </div>
+                                </li>
+                                {%endifequal%}
+                            </ul>
+                            {%endfor%}
+                            <br/> <br/>
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+
+                <div class="card">
+
+                    <div class="row p-3 pl-5">
+                        <div class="col-lg-2">
+                            <h4> COM2 </h4>
+
+                            <ul class="towerul">
+                                <li class="fline"></li>
+                                <li class="sline"></li>
+                                <li class="tline"></li>
+                                <li class="frline"></li>
+                                <li class="fvline"></li>
+                            </ul>
+                        </div>
+                        <div style="margin-left:-30px;" class="col-lg-10 simback">
+                            {%for i in l2%}
+                            <ul class="tower">
+                                {%ifequal i "True"%}
+                                <li>
+                                    <div id="startcont" onclick="myFunction()" class="towerdiv">
+                                        <br/>
+                                        <a class="btn btn-success">sim{{forloop.counter}}</a>
+                                    </div>
+                                </li>
+                                {%else%}
+                                <li>
+                                    <div id="startcont" onclick="myFunction()" class="towerdiv">
+                                        <br/>
+                                        <a class="btn btn-danger">sim{{forloop.counter}}</a>
+                                    </div>
+                                </li>
+                                {%endifequal%}
+                            </ul>
+                            {%endfor%}
+                            <br/> <br/>
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+
+
+                <div class="card">
+
+                    <div class="row p-3 pl-5">
+                        <div class="col-lg-2">
+                            <h4> COM3 </h4>
+
+                            <ul class="towerul">
+                                <li class="fline"></li>
+                                <li class="sline"></li>
+                                <li class="tline"></li>
+                                <li class="frline"></li>
+                                <li class="fvline"></li>
+                            </ul>
+                        </div>
+                        <div style="margin-left:-30px;" class="col-lg-10 simback">
+                            {%for i in l3%}
+                            <ul class="tower">
+                                {%ifequal i "True"%}
+                                <li>
+                                    <div id="startcont" onclick="myFunction()" class="towerdiv">
+                                        <br/>
+                                        <a class="btn btn-success">sim{{forloop.counter}}</a>
+                                    </div>
+                                </li>
+                                {%else%}
+                                <li>
+                                    <div id="startcont" onclick="myFunction()" class="towerdiv">
+                                        <br/>
+                                        <a class="btn btn-danger">sim{{forloop.counter}}</a>
+                                    </div>
+                                </li>
+                                {%endifequal%}
+                            </ul>
+                            {%endfor%}
+                            <br/> <br/>
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+
+                <div class="card">
+
+                    <div class="row p-3 pl-5">
+                        <div class="col-lg-2">
+                            <h4> COM4 </h4>
+
+                            <ul class="towerul">
+
+                                <li class="fline"></li>
+
+                                <li class="sline"></li>
+
+                                <li class="tline"></li>
+
+                                <li class="frline"></li>
+
+                                <li class="fvline"></li>
+
+                            </ul>
+                        </div>
+                        <div style="margin-left:-30px;" class="col-lg-10 simback">
+                            {%for i in l4%}
+                            <ul class="tower">
+                                {%ifequal i "True"%}
+                                <li>
+                                    <div id="startcont" onclick="myFunction()" class="towerdiv">
+                                        <br/>
+                                        <a class="btn btn-success">sim{{forloop.counter}}</a>
+                                    </div>
+                                </li>
+                                {%else%}
+                                <li>
+                                    <div id="startcont" onclick="myFunction()" class="towerdiv">
+                                        <br/>
+                                        <a class="btn btn-danger">sim{{forloop.counter}}</a>
+                                    </div>
+                                </li>
+                                {%endifequal%}
+                            </ul>
+                            {%endfor%}
+                            <br/> <br/>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    
+    var myVarind;
+
+    function myFunction3() {
+
+
+        document.getElementById("indloader").style.display = "block";
+        document.getElementById("ind_startcont").style.display = "block";
+        document.getElementById("indmyDiv").style.display = "none";
+        document.getElementById("fhide").style.display = "none";
+
+    }
+
+    function load() {
+        document.getElementById("indloader").style.display = "none";
+        document.getElementById("indmyDiv").style.display = "block";
+        document.getElementById("preloader").style.display = "none";
+    }
+</script>
+{%endblock%}

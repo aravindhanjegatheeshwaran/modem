@@ -34,6 +34,7 @@ urlpatterns = [
     url('test/',views.test,name='test'),
     url('report/',views.report,name='report'),  
     url('item/',views.item,name='item'),
+    url('model/',views.model,name='model')
 ]
 
 

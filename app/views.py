@@ -6,243 +6,169 @@ from django.template.loader import render_to_string
 from django.shortcuts import render, redirect
 from django.contrib import messages
 import logging
-from app.check_port import check
-from app.excuting import excuting
+from app.client import SocketServer
 from .forms import CsvForm
-from .models import Csv, Num, Numupdate, Report, Sim, Device, Spin
+from .models import Csv, Num, Numupdate, Report, Sim, Device, Spin,Manage, User
 import pandas as pd
 from prettytable import PrettyTable
 import os
 global COMPORT_NAME, sms
+import json
+import random
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 media = os.path.join(BASE_DIR, 'media/')
-logging.basicConfig(level=logging.DEBUG)
 
-
-class message():
-    def checks():
-        x = check()
-        result = {}
-        for y in x:
-            portname = str(y)
-            if portname != None:
-                result.setdefault('port', []).append(portname)
-                sem = excuting(portName=portname)
-                if sem.openComPort():
-                    print("successfully open  port"+" "+portname)
-                    smc = sem.checkCommunication()
-                    print(smc)
-                    if smc == logging.error:
-                        print("Couldn't communicate with module")
-                        result.setdefault('status', []).append("Not Ready")
-                    else:
-                        result.setdefault('status', []).append("Ready")
-                        pin = sem.checkpin()
-                        if pin:
-                            result.setdefault('pin', []).append('Ready')
-                            phone = sem.checkphone()
-                            if phone:
-                                for i in range(len(phone)):
-                                    if (phone[i].isdigit()):
-                                        num = num+phone[i]
-                                result.setdefault('phone', []).append(num)
-                            else:
-                                result.setdefault('phone', []).append(
-                                    'Check the sim')
-                            imei = sem.checkimei()
-                            result.setdefault('imei', []).append(imei)
-                            signal = sem.checksignal()
-                            if signal:
-                                num = ""
-                                for j in range(len(signal)):
-                                    if (signal[j].isdigit()):
-                                        num = num+signal[j]
-                                result.setdefault('signal', []).append(num)
-                            else:
-                                result.setdefault('signal', []).append(
-                                    'check the sim')
-                        else:
-                            result.setdefault('pin', []).append('Not Ready')
-                        sem.closeComPort()
-        return result
-
-    def checks2():
-        x = check()
-        result = {}
-        for y in x:
-            portname = str(y)
-            if portname != None:
-                result.setdefault('port', []).append(portname)
-                sem = excuting(portName=portname)
-                if sem.openComPort():
-                    print("successfully open  port"+" "+portname)
-                    smc = sem.checkCommunication()
-                    if smc == logging.error:
-                        print("Couldn't communicate with module")
-                        sem.closeComPort()
-                        result.setdefault('status', []).append("Not Ready")
-                    else:
-                        result.setdefault('status', []).append("Ready")
-                        al = 64
-                        for i in range(8):
-                            al += 1
-                            msim = sem.mulsim(chr(al))
-                            time.sleep(5)
-                            if msim == logging.error:
-                                print("couldn't set sim")
-                                result.setdefault('sim', []).append(False)
-                                sem.closeComPort()
-                                break
-                            else:
-                                result.setdefault('sim', []).append(True)
-                            pin = sem.checkpin()
-                            if not pin:
-                                result.setdefault('pin', []).append(False)
-                            else:
-                                result.setdefault('pin', []).append(True)
-        return result
-
-    def checks3():
-        che=check()
-        openport=[]
-        for x in che:
-            COMPORT_NAME = str(x)
-            logging.basicConfig(level=logging.DEBUG)
-            sms = excuting(portName=COMPORT_NAME)
-            if sms.openComPort():
-                print("successfully open  port"+" "+COMPORT_NAME)
-                smc = sms.checkCommunication()
-                if smc == logging.error:
-                    print("Couldn't communicate with module")
-                else:
-                    if not sms.mulsim('A'):
-                        logging.error("couldn't set sim")
-                        sms.closeComPort()
-                    else:
-                        if not sms.checkpin():
-                            logging.error("couldn't communicate with sim")
-                            sms.closeComPort()
-                        else:
-                            openport.append(COMPORT_NAME)
-                            sms.closeComPort()
-        return openport
-
-
-    def send(x,number, msg, name, limit):
-        global get, al
-        sms = excuting(portName=x)
-        if sms.openComPort():
-            if not sms.verbose():
-                logging.error("couldn't set CMEE")
-                sms.closeComPort()
-            else:
-                we = datetime.now()
-                date = we.strftime("%Y-%m-%d")
-                if name == "one":
-                    get = sms.sendSms(number, msg)
-                    if not get:
-                        status = "fail"
-                        Report.objects.create(num=number, msg=msg, date=date, status=status,pin="A",port=x)
-                    else:
-                        status = "success"
-                        Report.objects.create(num=number, msg=msg, date=date, status=status,pin="A",port=x)
-                        sms.closeComPort()
-                        return get
-                elif name == "multi":
-                    n = 1
-                    al = 65
-                    for i in number:
-                        print("numbr",x,i)
-                        i = str(i)
-                        limit=int(limit)
-                        if n==limit:
-                            n = 1
-                            al = 66
-                            sms.mulsim(chr(al))
-                            pin=sms.checkpin()
-                            if not pin:
-                                sms.mulsim('A')
-                            else:
-                                time.sleep(10)
-                                sim = chr(al)
-                                Spin.objects.create(port=x, sim=sim)
-                                get = sms.sendSms(i, msg)
-                                if not get:
-                                    status = "fail"
-                                    Report.objects.create(num=i, msg=msg, date=date, status=status,pin=sim,port=x)
-                                else:
-                                    status = "success"
-                                    Report.objects.create(num=i, msg=msg, date=date, status=status,pin=sim,port=x)
-                        else:
-                            sim = chr(al)
-                            Spin.objects.create(port=x, sim=sim)
-                            get = sms.sendSms(i, msg)
-                            if not get:
-                                status = "fail"
-                                Report.objects.create(num=i, msg=msg, date=date, status=status,pin=sim,port=x)
-                            else:
-                                status = "success"
-                                Report.objects.create(num=i, msg=msg, date=date, status=status,pin=sim,port=x)
-                                n += 1
-                    sms.closeComPort()
-                    return get
-
-    def thread(number, msg, name, limit):
-        x_ls = message.checks3()
-        thread_list = []
-        x=len(number)//len(x_ls)
-        i=0
-        l3=[]
-        while i<len(number):
-            l3.append(number[i:i+x])
-            i+=x
-        for y,z in zip(x_ls,l3):
-            thread = threading.Thread(target=message.send, args=(
-                y,z, msg, name, limit), daemon=True)
-            thread_list.append(thread)
-        for thread in thread_list:
-            thread.start()
-
-    def read():
-        global read
-        port = message.open()
-        portname = port
-        if portname != None:
-            sem = excuting(portName=portname)
-            sem.openComPort()
-            read = sem.readsms()
-            if read == logging.error:
-                return False
-            else:
-                return read
 
 
 def index(request):
     res = request.POST.get('update')
+    op=Manage.objects.all().last()
     l1 = []
     l2 = []
     l3 = []
     l4 = []
+    l5=[]
+    l6=[]
+    l7=[]
+    l8=[]
+    l9=[]
+    l10=[]
+    l11=[]
+    l12=[]
+    l13=[]
+    l14=[]
+    l15=[]
+    l16=[]
     n = 1
-    if res == "Update":
+    if res == "Update all ports":
         n = 1
-        result = message.checks2()
-        for i in result['pin']:
-            Sim.objects.create(pin=i)
-        obj4 = Sim.objects.all().order_by('-id')[:32][::-1]
-        for i in obj4:
-            if n <= 8:
-                l1.append(i.pin)
-            elif n <= 16:
-                l2.append(i.pin)
-            elif n <= 24:
-                l3.append(i.pin)
-            elif n <= 32:
-                l4.append(i.pin)
-            n += 1
-        return render(request, 'index.html', {'l1': l1, 'l2': l2, 'l3': l3, 'l4': l4, 'n': n})
-    else:
+        result = SocketServer.datasend(res)
+        if op.types=="8x8":
+            obj4 = Sim.objects.all().order_by('-id')[:32][::-1]
+            for i in obj4:
+                if n <= 8:
+                    l1.append(i.pin)
+                elif n <= 16:
+                    l2.append(i.pin)
+                elif n <= 24:
+                    l3.append(i.pin)
+                elif n <= 32:
+                    l4.append(i.pin)
+                n += 1
+            return render(request, 'index/index.html', {'l1': l1, 'l2': l2, 'l3': l3, 'l4': l4, 'n': n})
+        elif op.types=="16x8":
+            obj4 = Sim.objects.all().order_by('-id')[:128][::-1]
+            for i in obj4:
+                if n <= 8:
+                    l1.append(i.pin)
+                elif n <= 16:
+                    l2.append(i.pin)
+                elif n <= 24:
+                    l3.append(i.pin)
+                elif n <= 32:
+                    l4.append(i.pin)
+                elif n <= 40:
+                    l5.append(i.pin)
+                elif n <= 48:
+                    l6.append(i.pin)
+                elif n <= 56:
+                    l7.append(i.pin)
+                elif n <= 64:
+                    l8.append(i.pin)
+                elif n <= 72:
+                    l9.append(i.pin)
+                elif n <= 80:
+                    l10.append(i.pin)
+                elif n <= 88:
+                    l11.append(i.pin)
+                elif n <= 96:
+                    l12.append(i.pin)
+                elif n <= 104:
+                    l13.append(i.pin)
+                elif n <= 112:
+                    l14.append(i.pin)
+                elif n <= 120:
+                    l15.append(i.pin)
+                elif n <= 128:
+                    l16.append(i.pin)
+                n += 1
+            return render(request, 'index/index.html', {'l1': l1, 'l2': l2, 'l3': l3, 'l4': l4, 'n': n,'l5':l5,'l6': l6, 'l7': l7, 'l8': l8, 'l9': l9,'l10': l10, 'l11': l11, 'l12': l12, 'l13': l13,'l14': l14, 'l15': l15, 'l15': l15, 'l16': l16,})
+        elif op.types=="16x32":
+            obj4 = Sim.objects.all().order_by('-id')[:512][::-1]
+            for i in obj4:
+                if n <= 32:
+                    l1.append(i.pin)
+                elif n <= 64:
+                    l2.append(i.pin)
+                elif n <= 96:
+                    l3.append(i.pin)
+                elif n <= 128:
+                    l4.append(i.pin)
+                elif n <= 160:
+                    l5.append(i.pin)
+                elif n <= 192:
+                    l6.append(i.pin)
+                elif n <= 224:
+                    l7.append(i.pin)
+                elif n <= 256:
+                    l8.append(i.pin)
+                elif n <= 288:
+                    l9.append(i.pin)
+                elif n <= 320:
+                    l10.append(i.pin)
+                elif n <= 352:
+                    l11.append(i.pin)
+                elif n <= 384:
+                    l12.append(i.pin)
+                elif n <= 416:
+                    l13.append(i.pin)
+                elif n <= 448:
+                    l14.append(i.pin)
+                elif n <= 480:
+                    l15.append(i.pin)
+                elif n <= 512:
+                    l16.append(i.pin)
+                n += 1
+            return render(request, 'index/index.html', {'l1': l1, 'l2': l2, 'l3': l3, 'l4': l4, 'n': n,'l5':l5,'l6': l6, 'l7': l7, 'l8': l8, 'l9': l9,'l10': l10, 'l11': l11, 'l12': l12, 'l13': l13,'l14': l14, 'l15': l15, 'l15': l15, 'l16': l16,})
+        elif op.types=="16x64":
+            obj4 = Sim.objects.all().order_by('-id')[:1024][::-1]
+            for i in obj4:
+                if n <= 64:
+                    l1.append(i.pin)
+                elif n <= 128:
+                    l2.append(i.pin)
+                elif n <= 192:
+                    l3.append(i.pin)
+                elif n <= 256:
+                    l4.append(i.pin)
+                elif n <= 320:
+                    l5.append(i.pin)
+                elif n <= 384:
+                    l6.append(i.pin)
+                elif n <= 448:
+                    l7.append(i.pin)
+                elif n <= 512:
+                    l8.append(i.pin)
+                elif n <= 576:
+                    l9.append(i.pin)
+                elif n <= 640:
+                    l10.append(i.pin)
+                elif n <= 704:
+                    l11.append(i.pin)
+                elif n <= 768:
+                    l12.append(i.pin)
+                elif n <= 832:
+                    l13.append(i.pin)
+                elif n <= 896:
+                    l14.append(i.pin)
+                elif n <= 960:
+                    l15.append(i.pin)
+                elif n <= 1024:
+                    l16.append(i.pin)
+                n += 1
+            return render(request, 'index/index.html', {'l1': l1, 'l2': l2, 'l3': l3, 'l4': l4, 'n': n,'l5':l5,'l6': l6, 'l7': l7, 'l8': l8, 'l9': l9,'l10': l10, 'l11': l11, 'l12': l12, 'l13': l13,'l14': l14, 'l15': l15, 'l15': l15, 'l16': l16,})
+    elif op.types=="8x8":
         l = 1
         obj = Sim.objects.all().order_by('-id')[:32][::-1]
         for i in obj:
@@ -255,38 +181,150 @@ def index(request):
             elif l <= 32:
                 l4.append(i.pin)
             l += 1
-    return render(request, 'index.html', {'l1': l1, 'l2': l2, 'l3': l3, 'l4': l4})
+        obj1=Report.objects.all().order_by('-id')[:4][::-1]
+        return render(request, 'index/index.html', {'l1': l1, 'l2': l2, 'l3': l3, 'l4': l4,'si':obj1})
+    elif op.types=="16x8":
+            obj4 = Sim.objects.all().order_by('-id')[:128][::-1]
+            for i in obj4:
+                if n <= 8:
+                    l1.append(i.pin)
+                elif n <= 16:
+                    l2.append(i.pin)
+                elif n <= 24:
+                    l3.append(i.pin)
+                elif n <= 32:
+                    l4.append(i.pin)
+                elif n <= 40:
+                    l5.append(i.pin)
+                elif n <= 48:
+                    l6.append(i.pin)
+                elif n <= 56:
+                    l7.append(i.pin)
+                elif n <= 64:
+                    l8.append(i.pin)
+                elif n <= 72:
+                    l9.append(i.pin)
+                elif n <= 80:
+                    l10.append(i.pin)
+                elif n <= 88:
+                    l11.append(i.pin)
+                elif n <= 96:
+                    l12.append(i.pin)
+                elif n <= 104:
+                    l13.append(i.pin)
+                elif n <= 112:
+                    l14.append(i.pin)
+                elif n <= 120:
+                    l15.append(i.pin)
+                elif n <= 128:
+                    l16.append(i.pin)
+                n += 1
+            return render(request, 'index/index.html', {'l1': l1, 'l2': l2, 'l3': l3, 'l4': l4, 'n': n,'l5':l5,'l6': l6, 'l7': l7, 'l8': l8, 'l9': l9,'l10': l10, 'l11': l11, 'l12': l12, 'l13': l13,'l14': l14, 'l15': l15, 'l15': l15, 'l16': l16,})
+    elif op.types=="16x32":
+            obj4 = Sim.objects.all().order_by('-id')[:512][::-1]
+            for i in obj4:
+                if n <= 32:
+                    l1.append(i.pin)
+                elif n <= 64:
+                    l2.append(i.pin)
+                elif n <= 96:
+                    l3.append(i.pin)
+                elif n <= 128:
+                    l4.append(i.pin)
+                elif n <= 160:
+                    l5.append(i.pin)
+                elif n <= 192:
+                    l6.append(i.pin)
+                elif n <= 224:
+                    l7.append(i.pin)
+                elif n <= 256:
+                    l8.append(i.pin)
+                elif n <= 288:
+                    l9.append(i.pin)
+                elif n <= 320:
+                    l10.append(i.pin)
+                elif n <= 352:
+                    l11.append(i.pin)
+                elif n <= 384:
+                    l12.append(i.pin)
+                elif n <= 416:
+                    l13.append(i.pin)
+                elif n <= 448:
+                    l14.append(i.pin)
+                elif n <= 480:
+                    l15.append(i.pin)
+                elif n <= 512:
+                    l16.append(i.pin)
+                n += 1
+            return render(request, 'index/index.html', {'l1': l1, 'l2': l2, 'l3': l3, 'l4': l4, 'n': n,'l5':l5,'l6': l6, 'l7': l7, 'l8': l8, 'l9': l9,'l10': l10, 'l11': l11, 'l12': l12, 'l13': l13,'l14': l14, 'l15': l15, 'l15': l15, 'l16': l16,})
+    elif op.types=="16x64":
+            obj4 = Sim.objects.all().order_by('-id')[:1024][::-1]
+            for i in obj4:
+                if n <= 64:
+                    l1.append(i.pin)
+                elif n <= 128:
+                    l2.append(i.pin)
+                elif n <= 192:
+                    l3.append(i.pin)
+                elif n <= 256:
+                    l4.append(i.pin)
+                elif n <= 320:
+                    l5.append(i.pin)
+                elif n <= 384:
+                    l6.append(i.pin)
+                elif n <= 448:
+                    l7.append(i.pin)
+                elif n <= 512:
+                    l8.append(i.pin)
+                elif n <= 576:
+                    l9.append(i.pin)
+                elif n <= 640:
+                    l10.append(i.pin)
+                elif n <= 704:
+                    l11.append(i.pin)
+                elif n <= 768:
+                    l12.append(i.pin)
+                elif n <= 832:
+                    l13.append(i.pin)
+                elif n <= 896:
+                    l14.append(i.pin)
+                elif n <= 960:
+                    l15.append(i.pin)
+                elif n <= 1024:
+                    l16.append(i.pin)
+                n += 1
+            return render(request, 'index/index.html', {'l1': l1, 'l2': l2, 'l3': l3, 'l4': l4, 'n': n,'l5':l5,'l6': l6, 'l7': l7, 'l8': l8, 'l9': l9,'l10': l10, 'l11': l11, 'l12': l12, 'l13': l13,'l14': l14, 'l15': l15, 'l15': l15, 'l16': l16,})
 
 
 def csvfile(request):
-    if request.method == 'POST':
-        form = CsvForm(request.POST, request.FILES)
-        if form.is_valid():
-            obj = form.save()
-            csv = obj.file_csv
-            print(csv)
-            op = str(csv)
-            final = media+op
-            data = pd.read_csv(final)
-            data.sort_values("mobile", inplace = True)
-            data.drop_duplicates(subset ="mobile",keep ='first', inplace = True) 
-            for i in data['mobile']:
-                print(i)        
-                Numupdate.objects.create(name=csv,mobile=i)
-            obj=Numupdate.objects.all().filter(name=csv)
-            return render(request, 'contacts.html',{'get':obj})
+    form = CsvForm(request.POST, request.FILES)
+    if form.is_valid():
+        obj = form.save()
+        csv = obj.file_csv
+        print(csv)
+        op = str(csv)
+        final = media+op
+        data = pd.read_csv(final)
+        data.sort_values("mobile", inplace = True)
+        data.drop_duplicates(subset ="mobile",keep ='first', inplace = True) 
+        for i in data['mobile']:
+            Numupdate.objects.create(name=csv,mobile=i)
+        obj=Numupdate.objects.all().filter(name=csv)
+        return render(request, 'contacts.html',{'get':obj})
     else:
         form = CsvForm()
         return render(request, 'contacts.html', {'form': form})
 
 
 def manage(request):
-    t = request.GET.get('type')
-    count = request.GET.get('country')
-    rate = request.GET.get('rate')
-
+    cname=request.POST.get('cname')
+    types=request.POST.get('types')
+    print(cname,types)
+    if cname!=None and cname!='' and types!=None and types!='':
+        print('comming')
+        Manage.objects.create(cname=cname,types=types)
+        return render(request, 'app_manage.html')
     return render(request, 'app_manage.html')
-
 
 def device(request):
     global result
@@ -296,40 +334,39 @@ def device(request):
     if update != None and update!="":
         z = 1
         l1={}
-        result = message.checks()
-        for si in result['signal']:
-            if si != "":
-                si = int(float(si))
-            if 50 <= si <= 100:
-                report = "Excellent"
-                l1.setdefault('report',[]).append(report)
-            elif 20 <= si <= 50:
-                report = "Good"
-                l1.setdefault('report',[]).append(report)
-            elif 2 <= si <= 20:
-                report = "week"
-                l1.setdefault('report',[]).append(report)
-            elif si <= 1:
-                report = "No signal"
-                l1.setdefault('report',[]).append(report)
-        port=result['port']
-        status=result['status']
-        pin=result['pin']
-        phone=result['phone']
-        imei=result['imei']
-        signal=result['signal']
-        report=l1['report']
-        for i,j,k,l,m,n,o in zip(port,status,pin,phone,imei,signal,report):
-            Device.objects.create(port=i,status=j,pin=k,phone=l,imei=m,signal=n,report=o)
-        obj1=Device.objects.all().order_by('-id')[:4][::-1]
-        return render(request, 'manage_device.html', {'get': obj1, 'n': z})
+        a="deviceupdate"
+        try:
+            result = SocketServer.datasend(a)
+            print(result)
+            obj1=Device.objects.all().order_by('-id')[:4][::-1]
+            return render(request, 'manage_device.html', {'get': obj1, 'n': z})
+        except Exception as e:
+            print(e)
     else:
         obj=Device.objects.all().order_by('-id')[:4][::-1]
         return render(request, 'manage_device.html',{'get':obj})
 
+def model(request):
+    return render(request, 'manage_user.html')
 
 def user(request):
-    return render(request, 'manage_user.html')
+    adduser=request.POST.get('add')
+    cname=request.POST.get('cname')
+    mobile=request.POST.get('mobile')
+    uname=request.POST.get('uname')
+    # pwd=request.POST.get('password')
+    email=request.POST.get('email')
+    address=request.POST.get('address')
+    pkey=(''.join(str(random.randint(0,9)) for _ in range(12)))
+    print(adduser,cname,mobile,uname,email,address,pkey)
+    if adduser=="Adduser":
+        if cname!=None and cname!='' and mobile!=None and mobile!='' and uname!=None and uname!=''  and email!=None and email!='' and address!=None and address!='' and pkey!=None and pkey!='':
+            print('comming')
+            User.objects.create(cname=cname,mobile=mobile,uname=uname,email=email,address=address,pkey=pkey)
+            get=User.objects.all()
+            return render(request, 'user.html',{'get':get})
+    get=User.objects.all()
+    return render(request, 'user.html',{'get':get})
 
 
 def compose(request):
@@ -394,109 +431,351 @@ def inbox(request):
 def outbox(request):
     limit = request.POST.get('limit')
     send = request.POST.get('send')
-    file1 = request.GET.get('file')
-    limi = request.GET.get('limit1')
-    finame = request.session['finame']
-    ajax=request.GET.get('ajax')
+    com=request.GET.get('n')
+    sim=request.GET.get('sim')
+    finame = request.session['finame'] 
+    ajax=request.POST.get('ajax')
+    print(ajax)
+    li = []
     l1 = []
     l2 = []
     l3 = []
     l4 = []
-    if file1 != None:
-        obj = Csv.objects.get(name=file1)
-        csv = obj.file_csv
-        op = str(csv)
-        final = media+op
-        read = pd.read_csv(final)
-        j=0
-        for i in read['mobile']:
-            j+=1
-        obj1=Report.objects.all().order_by('-id')[:j][::-1]
-        obj2=Report.objects.all().filter(status='fail').order_by('-id')[:j][::-1]
-        k=0
-        for d in obj2:
-            k+=1
-            print(d.id,"thid",d.status)
-        obj3=Report.objects.all().filter(status='success').order_by('-id')[:j][::-1]
-        l=0
-        for f in obj3:
-            l+=1
-            print(f.id,f.status)
-        return render(request, 'sms_out_box1.html', {'num': l1,'get':obj1,'limit': limi,'fail':k,'suc':l})
-    elif limit != None and send != None:
-        name = "multi"
-        li = []
-        obj1 = Num.objects.all().filter(finame=finame).last()
-        conname = obj1.finame
-        msg = obj1.content
-        print(msg)
-        obj = Csv.objects.get(name=conname)
-        csv = obj.file_csv
-        op = str(csv)
-        final = media+op
-        read = pd.read_csv(final)
-        for i in read['mobile']:
-            if len(str(i))=='10':
+    l5=[]
+    l6=[]
+    l7=[]
+    l8=[]
+    l9=[]
+    l10=[]
+    l11=[]
+    l12=[]
+    l13=[]
+    l14=[]
+    l15=[]
+    l16=[]
+    j=0
+    k=0
+    l=0
+    n=0
+    m=0
+    g=0
+    a=0
+    z=0
+    df=datetime.now()
+    op=Manage.objects.all().last()
+    if op.types=="8x8":
+        if com != None and com!='' and sim!=None and sim!='':
+            obj = Num.objects.all().last()
+            obj1=Report.objects.all().filter(conname=obj.finame,date__range=["2021-03-11","2021-03-12"],port=com,pin='A')
+            for i in obj1:
+                j+=1
+                if i.status=="success":
+                    k+=1
+                if i.status=="fail":
+                    l+=1
+                n=i.limit
+            print(j,k,n,obj.finame)
+            return render(request, 'sms_out_box1.html', {'get':obj1,'n':n,'l':l,'j':j,'k':k,'port':com,'pin':sim})
+        elif limit != None and send != None:
+            name = "multi"
+            obj1 = Num.objects.all().filter(finame=finame).last()
+            conname = obj1.finame
+            msg = obj1.content
+            print(msg)
+            obj = Csv.objects.get(name=conname)
+            csv = obj.file_csv
+            op = str(csv)
+            final = media+op
+            read = pd.read_csv(final)
+            read.sort_values("mobile", inplace = True)
+            read.drop_duplicates(subset ="mobile",keep ='first', inplace = True) 
+        
+            for i in read['mobile']:
                 li.append(i)
-        n = 1
-        obj1 = Sim.objects.all().order_by('-id')[:32][::-1]
-        for i in obj1:
-            if n <= 8:
-                l1.append(i.pin)
-            elif n <= 16:
-                l2.append(i.pin)
-            elif n <= 24:
-                l3.append(i.pin)
-            elif n <= 32:
-                l4.append(i.pin)
-            n += 1
-        get = message.thread(li, msg, name, limit)
-        request.session['finame'] = None
-        return render(request, 'outbox.html', {'file': conname, 'limit': limit,'l1': l1, 'l2': l2, 'l3': l3, 'l4': l4})
-    elif ajax!=None and ajax!="":
-        obj=Spin.objects.get().last()
-        print(obj.sim)
-        ajax="getlast()"
-        return render(request,'outbox.html',{'ajax':ajax})
-    else:
-        l = 1
-        obj = Sim.objects.all().order_by('-id')[:32][::-1]
-        for i in obj:
-            if l <= 8:
-                l1.append(i.pin)
-            elif l <= 16:
-                l2.append(i.pin)
-            elif l <= 24:
-                l3.append(i.pin)
-            elif l <= 32:
-                l4.append(i.pin)
-            l += 1
-        return render(request, 'outbox.html', {'l1': l1, 'l2': l2, 'l3': l3, 'l4': l4})
+                k+=1
+            obj1 = Sim.objects.all().order_by('-id')[:32][::-1]
+            for i in obj1:
+                if n <= 8:
+                    l1.append(i.pin)
+                elif n <= 16:
+                    l2.append(i.pin)
+                elif n <= 24:
+                    l3.append(i.pin)
+                elif n <= 32:
+                    l4.append(i.pin)
+                n += 1
+
+            com=['COM25','COM26']
+            SocketServer.message(conname,com,li, msg, name, limit)
+            request.session['finame'] = None
+            return render(request, 'outbox/outbox.html', {'l1': l1, 'l2': l2, 'l3': l3, 'l4': l4,'k':k})
+        elif ajax!=None and ajax!="":
+            obj = Num.objects.all().last()
+            conname = obj.finame
+           
+            obj1 = Csv.objects.get(name=conname)
+            csv = obj1.file_csv
+            op = str(csv)
+            final = media+op
+            read = pd.read_csv(final)
+            read.sort_values("mobile", inplace = True)
+            read.drop_duplicates(subset ="mobile",keep ='first', inplace = True) 
+       
+            for i in read['mobile']:
+                li.append(i)
+                k+=1
+            obj2 = Num.objects.all().last()
+            obj3=Report.objects.all().filter(conname=obj2.finame,date__range=["2021-03-11","2021-03-12"])
+            for i in obj3:
+                if i.status=="success":
+                    j+=1
+                if i.status=="fail":
+                    l+=1
+                m=i.limit
+                g+=1
+            obj4 = Sim.objects.all().order_by('-id')[:32][::-1]
+            for p in obj4:
+                if n <= 7:
+                    l1.append(p.pin)
+                elif n <= 15:
+                    l2.append(p.pin)
+                elif n <= 23:
+                    l3.append(p.pin)
+                elif n <= 31:
+                    l4.append(p.pin)
+                n += 1
+           
+            a=g/k
+            a*=100
+            
+            ob=Spin.objects.all().last()
+            sent=ob.sim
+            if sent=="A":
+                z=1
+            if sent=="B":
+                z=2
+            if sent=="C":
+                z=3
+            if sent=="D":
+                z=4
+            if sent=="E":
+                z=5
+            if sent=="F":
+                z=6
+            if sent=="G":
+                z=7
+            if sent=="H":
+                z=8
+            html_response = render_to_string(
+            'outbox/ajaxoutbox.html', context={'l1': l1, 'l2': l2, 'l3': l3, 'l4': l4,'k':k,'j':j,'l':l,'n':n,'m':m,'g':g,'a':a,'z':z})
+            return HttpResponse(html_response, status=200)
+        else:
+            l = 1
+            obj = Sim.objects.all().order_by('-id')[:32][::-1]
+            for i in obj:
+                if l <= 8:
+                    l1.append(i.pin)
+                elif l <= 16:
+                    l2.append(i.pin)
+                elif l <= 24:
+                    l3.append(i.pin)
+                elif l <= 32:
+                    l4.append(i.pin)
+                l += 1
+            return render(request, 'outbox/outbox.html', {'l1': l1, 'l2': l2, 'l3': l3, 'l4': l4})
+    elif op.types=="16x8":
+            obj4 = Sim.objects.all().order_by('-id')[:128][::-1]
+            for i in obj4:
+                if n <= 8:
+                    l1.append(i.pin)
+                elif n <= 16:
+                    l2.append(i.pin)
+                elif n <= 24:
+                    l3.append(i.pin)
+                elif n <= 32:
+                    l4.append(i.pin)
+                elif n <= 40:
+                    l5.append(i.pin)
+                elif n <= 48:
+                    l6.append(i.pin)
+                elif n <= 56:
+                    l7.append(i.pin)
+                elif n <= 64:
+                    l8.append(i.pin)
+                elif n <= 72:
+                    l9.append(i.pin)
+                elif n <= 80:
+                    l10.append(i.pin)
+                elif n <= 88:
+                    l11.append(i.pin)
+                elif n <= 96:
+                    l12.append(i.pin)
+                elif n <= 104:
+                    l13.append(i.pin)
+                elif n <= 112:
+                    l14.append(i.pin)
+                elif n <= 120:
+                    l15.append(i.pin)
+                elif n <= 128:
+                    l16.append(i.pin)
+                n += 1
+            return render(request, 'outbox/outbox2.html', {'l1': l1, 'l2': l2, 'l3': l3, 'l4': l4, 'n': n,'l5':l5,'l6': l6, 'l7': l7, 'l8': l8, 'l9': l9,'l10': l10, 'l11': l11, 'l12': l12, 'l13': l13,'l14': l14, 'l15': l15, 'l15': l15, 'l16': l16,})
+    elif op.types=="16x32":
+            obj4 = Sim.objects.all().order_by('-id')[:512][::-1]
+            for i in obj4:
+                if n <= 32:
+                    l1.append(i.pin)
+                elif n <= 64:
+                    l2.append(i.pin)
+                elif n <= 96:
+                    l3.append(i.pin)
+                elif n <= 128:
+                    l4.append(i.pin)
+                elif n <= 160:
+                    l5.append(i.pin)
+                elif n <= 192:
+                    l6.append(i.pin)
+                elif n <= 224:
+                    l7.append(i.pin)
+                elif n <= 256:
+                    l8.append(i.pin)
+                elif n <= 288:
+                    l9.append(i.pin)
+                elif n <= 320:
+                    l10.append(i.pin)
+                elif n <= 352:
+                    l11.append(i.pin)
+                elif n <= 384:
+                    l12.append(i.pin)
+                elif n <= 416:
+                    l13.append(i.pin)
+                elif n <= 448:
+                    l14.append(i.pin)
+                elif n <= 480:
+                    l15.append(i.pin)
+                elif n <= 512:
+                    l16.append(i.pin)
+                n += 1
+            return render(request, 'outbox/outbox3.html', {'l1': l1, 'l2': l2, 'l3': l3, 'l4': l4, 'n': n,'l5':l5,'l6': l6, 'l7': l7, 'l8': l8, 'l9': l9,'l10': l10, 'l11': l11, 'l12': l12, 'l13': l13,'l14': l14, 'l15': l15, 'l15': l15, 'l16': l16,})
+    elif op.types=="16x64":
+            obj4 = Sim.objects.all().order_by('-id')[:1024][::-1]
+            for i in obj4:
+                if n <= 64:
+                    l1.append(i.pin)
+                elif n <= 128:
+                    l2.append(i.pin)
+                elif n <= 192:
+                    l3.append(i.pin)
+                elif n <= 256:
+                    l4.append(i.pin)
+                elif n <= 320:
+                    l5.append(i.pin)
+                elif n <= 384:
+                    l6.append(i.pin)
+                elif n <= 448:
+                    l7.append(i.pin)
+                elif n <= 512:
+                    l8.append(i.pin)
+                elif n <= 576:
+                    l9.append(i.pin)
+                elif n <= 640:
+                    l10.append(i.pin)
+                elif n <= 704:
+                    l11.append(i.pin)
+                elif n <= 768:
+                    l12.append(i.pin)
+                elif n <= 832:
+                    l13.append(i.pin)
+                elif n <= 896:
+                    l14.append(i.pin)
+                elif n <= 960:
+                    l15.append(i.pin)
+                elif n <= 1024:
+                    l16.append(i.pin)
+                n += 1
+            return render(request, 'outbox/outbox.html', {'l1': l1, 'l2': l2, 'l3': l3, 'l4': l4, 'n': n,'l5':l5,'l6': l6, 'l7': l7, 'l8': l8, 'l9': l9,'l10': l10, 'l11': l11, 'l12': l12, 'l13': l13,'l14': l14, 'l15': l15, 'l15': l15, 'l16': l16,})
 
 
 def test(request):
-    return render(request, 'sms_out_box1.html')
+    return render(request, 'index/index4.html')
 
 
 def report(request):
     status = request.POST.get('status')
     date = request.POST.get('date')
-    if status != "" and status != None and date != "" and date != None:
-        print(status, date)
-        obj3 = Report.objects.all().filter(status=status, date=date)
-        return render(request, 'report.html', {'get': obj3})
+    finame=request.POST.get('finame')
+    i=0
+    j=0
+    k=0
+    if status != "" and status != None and date != "" and date != None and finame != "" and finame != None:
+        print(status, date,finame)
+        obj6 = Report.objects.all().filter(status=status, date__contains=date,conname=finame)
+        for n in obj6:
+            i+=1
+            if n.status=="success":
+                j+=1
+            elif n.status=="fail":
+                k+=1
+        return render(request, 'report.html', {'get': obj6,'i':i,'j':j,'k':k})
+    elif status != "" and status != None and date != "" and date != None:
+        obj5 = Report.objects.all().filter(status=status, date__contains=date)
+        for n in obj5:
+            i+=1
+            if n.status=="success":
+                j+=1
+            elif n.status=="fail":
+                k+=1
+        return render(request, 'report.html', {'get': obj5,'i':i,'j':j,'k':k})
+    elif status != "" and status != None  and finame != "" and finame != None:
+        print(status, date,finame)
+        obj4 = Report.objects.all().filter(status=status,conname=finame)
+        for n in obj4:
+            i+=1
+            if n.status=="success":
+                j+=1
+            elif n.status=="fail":
+                k+=1
+        return render(request, 'report.html', {'get': obj4,'i':i,'j':j,'k':k})
     elif status != None and status != "":
         print(status)
-        obj1 = Report.objects.all().filter(status=status)
-        return render(request, 'report.html', {'get': obj1})
+        obj3= Report.objects.all().filter(status=status)
+        for n in obj3:
+            i+=1
+            if n.status=="success":
+                j+=1
+            elif n.status=="fail":
+                k+=1
+        return render(request, 'report.html', {'get': obj3,'i':i,'j':j,'k':k})
     elif date != None and date != "":
         print(date)
-        obj2 = Report.objects.all().filter(date=date)
-        return render(request, 'report.html', {'get': obj2})
+        obj2 = Report.objects.all().filter(date__contains=date)
+        for n in obj2:
+            i+=1
+            if n.status=="success":
+                j+=1
+            elif n.status=="fail":
+                k+=1
+        return render(request, 'report.html', {'get': obj2,'i':i,'j':j,'k':k})
+    elif finame != "" and finame != None:
+        print(finame)
+        obj1=Report.objects.all().filter(conname=finame)
+        for n in obj1:
+            i+=1
+            if n.status=="success":
+                j+=1
+            elif n.status=="fail":
+                k+=1
+        return render(request, 'report.html', {'get': obj1,'i':i,'j':j,'k':k})
     else:
         obj = Report.objects.all()
-        return render(request, 'report.html', {'get': obj})
+        for n in obj:
+            i+=1
+            if n.status=="success":
+                j+=1
+            elif n.status=="fail":
+                k+=1
+        return render(request, 'report.html', {'get': obj,'i':i,'j':j,'k':k})
 
 
 def item(request):
-    return render(request, 'sms_item.html')
+    return render(request, 'outbox/outbox4.html')

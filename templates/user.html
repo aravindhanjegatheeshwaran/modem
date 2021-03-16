@@ -1,0 +1,81 @@
+<div class="d-flex align-items-center justify-content-between welcome-content">
+    <div class="top-header" style="background:#051c6f;">
+        <div class="float-left p-3">
+            <i class="fa fa-bars" aria-hidden="true" style="color:white !important;size:30px;"></i>
+        </div>
+        <div class="float-right pr-5">
+
+            <img class="profile-img " src="../static/images/user/12.jpg"> <span class="admin_name"> Admin!</span>
+        </div>
+    </div>
+</div>
+{% extends 'layout.html' %} {% load static %} {% block title %}Modem{% endblock %} {% block content %}
+<style>
+    table {
+        margin-top: 10px;
+    }
+    
+    table tr th {
+        background: #0c0375;
+        text-align: center;
+        padding: 10px 20px;
+        color: white;
+    }
+    
+    .user_add {
+        font-size: 14px;
+    }
+    
+    input {
+        height: 35px !important;
+    }
+    
+    .check {
+        margin-top: 6px;
+    }
+    
+    .reserbtn {
+        margin-left: 10px;
+    }
+</style>
+
+<div class="content-page">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+
+                    <div class="col-lg-12">
+                        <a href="/model" class="btn btn-success">Add User</a>
+
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Company Name</th>
+                                    <th scope="col">MobileNo</th>
+                                    <th scope="col">User Name</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Address</th>
+                                    <th scope="col">Product Key</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {%for i in get%}
+                                <tr>
+                                    <td>{{i.cname}}</td>
+                                    <td>{{i.mobile}}</td>
+                                    <td>{{i.uname}}</td>
+                                    <td>{{i.email}}</td>
+                                    <td>{{i.address}}</td>
+                                    <td>{{i.pkey}}</td>
+                                </tr>
+                                {%endfor%}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{%endblock%}

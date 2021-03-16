@@ -70,11 +70,11 @@
                                 <table>
                                     <tr>
                                         <td>Port: </td>
-                                        <td>Com3 </td>
+                                        <td>{{port}} </td>
                                     </tr>
                                     <tr>
                                         <td>Sim: </td>
-                                        <td>Sim1 </td>
+                                        <td>{{pin}} </td>
                                     </tr>
                                 </table>
                             </div>
@@ -83,15 +83,19 @@
                                 <table style="float:right">
                                     <tr>
                                         <td>Sms Limit: </td>
-                                        <td>{{limit}} </td>
+                                        <td>{{n}} </td>
                                     </tr>
                                     <tr>
-                                        <td>Send Sms:{{suc}}</span>
-                                        </td>
+                                        <td>Total SMS: </td>
+                                        <td>{{j}} </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Send Sms:</td>
+                                        <td>{{k}}</td>
                                     </tr>
                                     <tr>
                                         <td>Failed Sms: </td>
-                                        <td>{{fail}} </td>
+                                        <td>{{l}} </td>
                                     </tr>
                                 </table>
                             </div>
@@ -112,12 +116,13 @@
                             <tbody>
                                 {%for i in get%}
                                 <tr>
-                                    <td>{{i.num}}</td>
+                                    <td> {{i.num}}</td>
                                     <td>{{i.msg}}</td>
-                                    <td> {{i.date}}</td>
+                                    <td>{{i.date}}</td>
                                     <td>{{i.status}}</td>
                                 </tr>
                                 {%endfor%}
+    
                             </tbody>
                         </table>
                     </div>

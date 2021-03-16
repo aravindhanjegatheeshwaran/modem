@@ -1,13 +1,13 @@
 {% load static %}{% block content %}
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<nav class=" iq-sidebar-menu  " style="float:left;background: #051c6f;">
+<nav class=" iq-sidebar-menu stricky " style="float:left;background: #051c6f;">
     <ul id="iq-sidebar-toggle" class="iq-menu">
 
-        <li class="navli ">
-            <a class="navli_item " href=" / ">Dashboard</a>
+    <li class="navli ">
+            <a class="navli_item" href="/"><i class="fa fa-chart-line"></i>Dashboard</a>
         </li>
         <li class=" navli ">
-            <a class="navli_item " href="/manage " class="collapsed ">
+            <a class="navli_item" href="/manage" class="collapsed">
                 <img src="{% static '/images/app white.png'%}" width="20px" height="20px">
                 <span>  Application Management</span>
             </a>
@@ -52,17 +52,17 @@
         </a>
     </li>
     <li class="navli ">
-        <a class="navli_item " href="# " class="collapsed ">
+        <a class="navli_item " href="/test " class="collapsed ">
             <i class="fa fa-phone " aria-hidden="true "></i></i><span>Voice Call</span>
         </a>
     </li>
     <li class="navli ">
-        <a class="navli_item " href="/test " class="collapsed ">
+        <a class="navli_item " href="/item" class="collapsed ">
             <i class="fa fa-calendar " aria-hidden="true "></i><span>Scheduler</span>
         </a>
     </li>
     <li class=" navli ">
-        <a class="navli_item " href="/item " class="collapsed ">
+        <a class="navli_item " href=" " class="collapsed ">
             <img src="{% static '/images/callreport.png'%} " width="20px " height="20px ">
             <span>Voice Call Report</span>
         </a>

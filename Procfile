@@ -1,1 +1,3 @@
-web: gunicorn modem.wsgi --log-file -
+web: gunicorn modem.wsgi:application --log-file - --log-level debug
+python manage.py collectstatic --noinput
+manage.py migrate

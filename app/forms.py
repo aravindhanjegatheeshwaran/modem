@@ -1,5 +1,5 @@
 from django import forms
-from .models import Csv
+from .models import Csv,User
 
 
 def validate_file_extension(value):

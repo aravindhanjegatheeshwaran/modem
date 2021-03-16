@@ -121,13 +121,17 @@
                                                         </div> {% endfor %}
                                                         <div class="row">
                                                             <div class="col-lg-4 col-12">
-                                                                <input type="submit" value="Upload" class="btn btn-danger upload">
+                                                                <input type="submit" value="Upload" class="btn btn-danger upload" onclick="myFunction1()">
 
                                                             </div>
                                                             <div class="col-lg-8 col-12 pt-3">
-                                                                <a class="dwnd btn btn-success" style="text-decoration:none" href="{% static '/file/modem.csv' %}" download>Sample File Download</a>
+                                                                <a class="dwnd btn btn-success" style="text-decoration:none" onclick="myFunction2()" href="{% static '/file/modem.csv' %}" download>Sample File Download</a>
                                                             </div>
-
+                                                            
+                                                            <div class="col-lg-8 col-12 pt-3">
+                                                                <button class="btn btn-success"  value="save" onclick="myFunction3()">save</button>
+                                                            </div>
+                                                                
                                                         </div>
                                                     </div>
 
@@ -151,9 +155,31 @@
     $(document).ready(function() {
         $('#add-html-here').change(function() {
             var count = $("table tr").length;
-            var c = count - 1;
+            var c = count;
             $('#counter').text(c);
         });
     });
+    function myFunction1() {
+        Swal.fire(
+            'successfully',
+            'uploaded!',
+            'success'
+        )
+    }
+    function myFunction2() {
+        Swal.fire(
+            'successfully',
+            'downloaded!',
+            'success'
+        )
+    }
+    function myFunction3() {
+        Swal.fire(
+            'successfully',
+            'saved!',
+            'success'
+        )
+    }
+
 </script>
 {%endblock%}

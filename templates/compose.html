@@ -148,7 +148,7 @@
                                                 });
                                                 $('#add-html-here').change(function() {
                                                     var count = $("table tr").length;
-                                                    var c = count - 1;
+                                                    var c = count;
                                                     $('#counter').text(c);
                                                 });
                                             });
@@ -192,12 +192,12 @@
                             <div class="row">
                                 <div class="col-sm-10 col-lg-9">
                                     <span>Message Character : <span id="rchars"></span></span>
-                                    <span class="ml-5">maximum character (250)</span>
+                                    <span class="ml-5">maximum character (160)</span>
                                     <textarea name="message" rows="4" class="form-control text_top"></textarea>
                                 </div>
                                 <div class="col-sm-2 col-lg-3 mt-4 p-3">
 
-                                    <button type="submit" class="btn btn-danger out_style " name="outbox">Forward to SMS OutBox </button>
+                                    <button type="submit" onclick="myFunction1()" class="btn btn-danger out_style " name="outbox">Forward to SMS OutBox </button>
 
                                 </div>
                             </div>
@@ -225,6 +225,15 @@
 </form>
 
 <script>
+
+    function myFunction1() {
+        Swal.fire(
+            'SUCCESSFULLY',
+            'FORWARD TO SMS OUTBOX',
+            'success'
+        )
+    }
+
     $('textarea').keyup(function() {
         var textlen = $(this).val().length;
         $('#rchars').text(textlen);
