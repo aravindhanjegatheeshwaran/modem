@@ -9,3 +9,4 @@ mysql-connector-python
 mysqlclient 
 websockets
 # goto-statement
+gunicorn
